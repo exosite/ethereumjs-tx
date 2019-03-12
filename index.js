@@ -152,6 +152,8 @@ class Transaction {
 
     // set chainId
     this._chainId = chainId || data.chainId || 0
+    this.hashFunc = opts.hashFunc ? opts.hashFunc : ethUtil.keccak256
+    this.rawTo = new Buffer([])
   }
 
   /**
@@ -175,7 +177,7 @@ class Transaction {
     // instead of hashing only the first six elements (ie. nonce, gasprice, startgas, to, value, data),
     // hash nine elements, with v replaced by CHAIN_ID, r = 0 and s = 0
 
-    let items
+    let items, rlpData
     if (includeSignature) {
       items = this.raw
     } else {
@@ -190,10 +192,18 @@ class Transaction {
         items = this.raw.slice(0, 6)
       }
     }
+    if (this.rawTo.length >= 32) {
+      this.raw[3] = this.rawTo
+      items[3] = this.rawTo
+    }
 
     // create hash
-    return ethUtil.rlphash(items)
+    rlpData = ethUtil.rlp.encode(items)
+    return this.hashFunc(rlpData)
   }
+
+  // serialize () {
+  // }
 
   /**
    * returns chain ID

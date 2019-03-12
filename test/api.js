@@ -4,6 +4,8 @@ const rlp = utils.rlp
 const Transaction = require('../index.js')
 const txFixtures = require('./txs.json')
 const txFixturesEip155 = require('./ttTransactionTestEip155VitaliksTests.json')
+const crypto = require('crypto')
+const sha256 = crypto.createHash('sha256')
 tape('[Transaction]: Basic functions', function (t) {
   var transactions = []
 
@@ -200,6 +202,32 @@ tape('[Transaction]: Basic functions', function (t) {
   t.test('allow chainId more than 1 byte', function (st) {
     var tx = new Transaction({ chainId: 0x16b2 })
     st.equal(tx.getChainId(), 0x16b2)
+    st.end()
+  })
+
+  t.test('should use custome hash function instead of keccak256', function (st) {
+    let tx = txFixtures[0]
+    let pto = new Transaction(tx.raw)
+    let ptn = new Transaction(tx.raw, {
+      hashFunc: function (rlpData) {
+        sha256.update(rlpData)
+        return sha256.digest()
+      }
+    })
+    st.notEqual(pto.hash().toString('hex'), ptn.hash().toString('hex'))
+    st.end()
+  })
+  t.test('should use rawTo instead of to', function (st) {
+    let tx = txFixtures[0]
+    let pto = new Transaction(tx.raw)
+    let ptn = new Transaction(tx.raw)
+    let pub = crypto.randomBytes(32)
+    let privKey = crypto.randomBytes(32)
+    ptn.rawTo = pub
+    st.notEqual(pto.hash().toString('hex'), ptn.hash().toString('hex'))
+    pto.sign(privKey)
+    ptn.sign(privKey)
+    st.notEqual(pto.serialize().toString('hex'), ptn.serialize().toString('hex'))
     st.end()
   })
 })
