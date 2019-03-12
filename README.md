@@ -7,7 +7,15 @@
 [![js-standard-style](https://cdn.rawgit.com/feross/standard/master/badge.svg)](https://github.com/feross/standard)  
 
 # INSTALL
-`npm install ethereumjs-tx`
+
+1. Clone this repo.
+`git clone https://github.com/exosite/ethereumjs-tx.git`
+
+2. Install dependencies.
+`npm install`
+
+3. Install library.
+`npm install file-path/ethereumjs-tx`
 
 # USAGE
 
