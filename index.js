@@ -105,13 +105,13 @@ class Transaction {
       name: 'r',
       length: 32,
       allowZero: true,
-      allowLess: true,
+      allowLess: false,
       default: new Buffer([])
     }, {
       name: 's',
       length: 32,
       allowZero: true,
-      allowLess: true,
+      allowLess: false,
       default: new Buffer([])
     }]
 
